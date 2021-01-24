@@ -1,0 +1,8 @@
+D:\Projects\Java\JM\T1\src\main\java\jm\task\core\jdbc\Main.java
+D:\Projects\Java\JM\T1\src\main\java\jm\task\core\jdbc\dao\UserDao.java
+D:\Projects\Java\JM\T1\src\main\java\jm\task\core\jdbc\dao\UserDaoJDBCImpl.java
+D:\Projects\Java\JM\T1\src\main\java\jm\task\core\jdbc\service\UserService.java
+D:\Projects\Java\JM\T1\src\main\java\jm\task\core\jdbc\service\UserServiceImpl.java
+D:\Projects\Java\JM\T1\src\main\java\jm\task\core\jdbc\model\User.java
+D:\Projects\Java\JM\T1\src\main\java\jm\task\core\jdbc\dao\UserDaoHibernateImpl.java
+D:\Projects\Java\JM\T1\src\main\java\jm\task\core\jdbc\util\Util.java

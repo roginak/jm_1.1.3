@@ -1,5 +1,27 @@
 package jm.task.core.jdbc.util;
 
+import com.mysql.cj.jdbc.ConnectionImpl;
+
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
 public class Util {
     // реализуйте настройку соеденения с БД
+    public static ConnectionImpl getMySQLConnection() throws SQLException, ClassNotFoundException {
+        String hostName = "localhost";
+
+        String dbName = "test";
+        String userName = "root";
+        String password = "Igorkan325!";
+
+        return getMySQLConnection(hostName, dbName, userName, password);
+    }
+
+    public static ConnectionImpl getMySQLConnection(String hostName, String dbName,
+                                                String userName, String password) throws SQLException, ClassNotFoundException {
+        String connectionURL = "jdbc:mysql://" + hostName + ":3306/" + dbName+"?useSSL=false";
+
+        ConnectionImpl conn = (ConnectionImpl) DriverManager.getConnection(connectionURL, userName, password);
+        return conn;
+    }
 }
