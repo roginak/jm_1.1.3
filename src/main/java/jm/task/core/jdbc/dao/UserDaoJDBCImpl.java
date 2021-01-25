@@ -1,235 +1,100 @@
 package jm.task.core.jdbc.dao;
 
-import com.mysql.cj.jdbc.ConnectionImpl;
-import com.mysql.cj.jdbc.StatementImpl;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
 public class UserDaoJDBCImpl implements UserDao {
+    private static Connection conn;
+
+    static {
+        try {
+            conn = Util.getMySQLConnection();
+        } catch (SQLException | ClassNotFoundException se) {
+            se.printStackTrace();
+        }
+    }
+
     public UserDaoJDBCImpl() {
 
     }
 
-    public void createUsersTable() {
-        ConnectionImpl conn = null;
-        StatementImpl stmt = null;
+    public void execute(String sql) {
         try {
-            conn = Util.getMySQLConnection();
-            stmt = (StatementImpl) conn.createStatement();
-
-            String sql = "CREATE TABLE IF NOT EXISTS users " +
-                    "(id BIGINT not NULL AUTO_INCREMENT, " +
-                    " name VARCHAR(255), " +
-                    " lastname VARCHAR(255), " +
-                    " age INTEGER, " +
-                    " PRIMARY KEY ( id ))";
-
+            Statement stmt = conn.createStatement();
             stmt.execute(sql);
         } catch (SQLException se) {
-            //Handle errors for JDBC
             se.printStackTrace();
-        } catch (Exception e) {
-            //Handle errors for Class.forName
-            e.printStackTrace();
-        } finally {
-            //finally block used to close resources
-            try {
-                if (stmt != null)
-                    conn.close();
-            } catch (SQLException se) {
-            }// do nothing
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
         }
+    }
+
+    public ResultSet executeGetData(String sql) {
+        ResultSet rs = null;
+        try {
+            Statement stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+        } catch (SQLException se) {
+            se.printStackTrace();
+        }
+
+        return rs;
+    }
+
+    public void createUsersTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS users " +
+                "(id BIGINT not NULL AUTO_INCREMENT, " +
+                " name VARCHAR(255), " +
+                " lastname VARCHAR(255), " +
+                " age INTEGER, " +
+                " PRIMARY KEY ( id ))";
+        execute(sql);
     }
 
     public void dropUsersTable() {
-        ConnectionImpl conn = null;
-        StatementImpl stmt = null;
-        try {
-            conn = Util.getMySQLConnection();
-
-            stmt = (StatementImpl) conn.createStatement();
-
-            String sql = "DROP TABLE IF EXISTS users";
-
-            stmt.execute(sql);
-
-        } catch (SQLException se) {
-            //Handle errors for JDBC
-            se.printStackTrace();
-        } catch (Exception e) {
-            //Handle errors for Class.forName
-            e.printStackTrace();
-        } finally {
-            //finally block used to close resources
-            try {
-                if (stmt != null)
-                    conn.close();
-            } catch (SQLException se) {
-            }// do nothing
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
-        }
+        String sql = "DROP TABLE IF EXISTS users";
+        execute(sql);
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        ConnectionImpl conn = null;
-        StatementImpl stmt = null;
-        try {
-            conn = Util.getMySQLConnection();
-
-            stmt = (StatementImpl) conn.createStatement();
-
-            String sql = "INSERT INTO `test`.`users` (`name`, `lastName`, `age`) VALUES ('" + name + "', '" + lastName + "', " + age + ");";
-
-            stmt.execute(sql);
-
-        } catch (SQLException se) {
-            //Handle errors for JDBC
-            se.printStackTrace();
-        } catch (Exception e) {
-            //Handle errors for Class.forName
-            e.printStackTrace();
-        } finally {
-            //finally block used to close resources
-            try {
-                if (stmt != null)
-                    conn.close();
-            } catch (SQLException se) {
-            }// do nothing
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
-        }
+        String sql = "INSERT INTO `test`.`users` (`name`, `lastName`, `age`) VALUES ('" + name + "', '" + lastName + "', " + age + ");";
+        execute(sql);
     }
 
     public void removeUserById(long id) {
-        ConnectionImpl conn = null;
-        StatementImpl stmt = null;
-        try {
-            conn = Util.getMySQLConnection();
-            stmt = (StatementImpl) conn.createStatement();
-
-            String sql = "DELETE FROM users where id = " + id + ";";
-            System.out.println(sql);
-
-            stmt.execute(sql);
-        } catch (SQLException se) {
-            //Handle errors for JDBC
-            se.printStackTrace();
-        } catch (Exception e) {
-            //Handle errors for Class.forName
-            e.printStackTrace();
-        } finally {
-            //finally block used to close resources
-            try {
-                if (stmt != null)
-                    conn.close();
-            } catch (SQLException se) {
-            }// do nothing
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
-        }
+        String sql = "DELETE FROM users where id = " + id + ";";
+        execute(sql);
     }
 
     public List<User> getAllUsers() {
-        {
-            ConnectionImpl conn = null;
-            StatementImpl stmt = null;
-            List<User> ls = new LinkedList<>();
-            try {
+        List<User> ls = new LinkedList<>();
+        String sql = "SELECT * FROM users;";
+        try (ResultSet rs = executeGetData(sql)) {
+            while (rs.next()) {
+                long id = rs.getLong("id");
+                String name = rs.getString("name");
+                String lastname = rs.getString("lastname");
+                byte age = rs.getByte("age");
 
-                conn = Util.getMySQLConnection();
-                stmt = (StatementImpl) conn.createStatement();
+                User user = new User(name, lastname, age);
+                user.setId(id);
 
-                String sql = "SELECT * FROM users;";
-
-                ResultSet rs = stmt.executeQuery(sql);
-                while (rs.next()) {
-                    long id = rs.getLong("id");
-                    String name = rs.getString("name");
-                    String lastname = rs.getString("lastname");
-                    byte age = rs.getByte("age");
-
-                    User user = new User(name, lastname, age);
-                    user.setId(id);
-
-                    ls.add(user);
-                }
-            } catch (SQLException se) {
-                //Handle errors for JDBC
-                se.printStackTrace();
-            } catch (Exception e) {
-                //Handle errors for Class.forName
-                e.printStackTrace();
-            } finally {
-                //finally block used to close resources
-                try {
-                    if (stmt != null)
-                        conn.close();
-                } catch (SQLException se) {
-                }// do nothing
-                try {
-                    if (conn != null)
-                        conn.close();
-                } catch (SQLException se) {
-                    se.printStackTrace();
-                }
-                return ls;
+                ls.add(user);
             }
+
+        } catch (SQLException se) {
+            se.printStackTrace();
         }
+        return ls;
     }
 
     public void cleanUsersTable() {
-        ConnectionImpl conn = null;
-        StatementImpl stmt = null;
-        try {
-            conn = Util.getMySQLConnection();
-            stmt = (StatementImpl) conn.createStatement();
-
-            String sql = "DELETE FROM users;";
-
-            stmt.execute(sql);
-        } catch (SQLException se) {
-            //Handle errors for JDBC
-            se.printStackTrace();
-        } catch (Exception e) {
-            //Handle errors for Class.forName
-            e.printStackTrace();
-        } finally {
-            //finally block used to close resources
-            try {
-                if (stmt != null)
-                    conn.close();
-            } catch (SQLException se) {
-            }// do nothing
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (SQLException se) {
-                se.printStackTrace();
-            }
-        }
+        String sql = "DELETE FROM users;";
+        execute(sql);
     }
 }

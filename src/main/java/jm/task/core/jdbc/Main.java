@@ -1,6 +1,7 @@
 package jm.task.core.jdbc;
 
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.service.UserService;
 import jm.task.core.jdbc.service.UserServiceImpl;
 
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public class Main {
     public static void main(String[] args) {
         // реализуйте алгоритм здесь
-        UserServiceImpl impl = new UserServiceImpl();
+        UserService impl = new UserServiceImpl();
 
         impl.createUsersTable(); //Создание таблицы User(ов)
 
@@ -22,9 +23,7 @@ public class Main {
         //Получение всех User из базы
         List<User> ls = impl.getAllUsers();
         System.out.println("Список всех User(ов):");
-        for (User user: ls) {
-            System.out.println(user);
-        }
+        ls.forEach(System.out::println);
 
         //Очистка таблицы User(ов)
         impl.cleanUsersTable();
