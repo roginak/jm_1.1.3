@@ -6,29 +6,24 @@ import jm.task.core.jdbc.service.UserServiceImpl;
 
 import java.util.List;
 
-
 public class Main {
     public static void main(String[] args) {
         // реализуйте алгоритм здесь
         UserService impl = new UserServiceImpl();
+        impl.createUsersTable();
 
-        impl.createUsersTable(); //Создание таблицы User(ов)
+        impl.saveUser("Test1","Testov1", (byte) 25);
+        impl.saveUser("Test2","Testov2", (byte) 26);
+        impl.saveUser("Test3","Testov3", (byte) 27);
+        impl.saveUser("Test4","Testov4", (byte) 28);
 
-        //Добавление 4 User(ов)
-        impl.saveUser("Igor", "Kan", (byte) 23);
-        impl.saveUser("Ivan", "Ivanov", (byte) 10);
-        impl.saveUser("Julia", "Chang", (byte) 25);
-        impl.saveUser("Stephe", "Fox", (byte) 26);
-
-        //Получение всех User из базы
         List<User> ls = impl.getAllUsers();
-        System.out.println("Список всех User(ов):");
         ls.forEach(System.out::println);
 
-        //Очистка таблицы User(ов)
         impl.cleanUsersTable();
 
-        //Удаление таблицы
         impl.dropUsersTable();
+
+        impl.close();
     }
 }
