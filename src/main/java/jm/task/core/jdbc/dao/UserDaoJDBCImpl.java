@@ -47,43 +47,32 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void createUsersTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS users " +
+        execute("CREATE TABLE IF NOT EXISTS users " +
                 "(id BIGINT not NULL AUTO_INCREMENT, " +
                 " name VARCHAR(255), " +
                 " lastname VARCHAR(255), " +
                 " age INTEGER, " +
-                " PRIMARY KEY ( id ))";
-        execute(sql);
+                " PRIMARY KEY ( id ))");
     }
 
     public void dropUsersTable() {
-        String sql = "DROP TABLE IF EXISTS users";
-        execute(sql);
+        execute("DROP TABLE IF EXISTS users");
     }
 
     public void saveUser(String name, String lastName, byte age) {
-        String sql = "INSERT INTO `test`.`users` (`name`, `lastName`, `age`) VALUES ('" + name + "', '" + lastName + "', " + age + ");";
-        execute(sql);
+        execute("INSERT INTO `test`.`users` (`name`, `lastName`, `age`) VALUES ('" + name + "', '" + lastName + "', " + age + ");");
     }
 
     public void removeUserById(long id) {
-        String sql = "DELETE FROM users where id = " + id + ";";
-        execute(sql);
+        execute("DELETE FROM users where id = " + id + ";");
     }
 
     public List<User> getAllUsers() {
         List<User> ls = new LinkedList<>();
-        String sql = "SELECT * FROM users;";
-        try (ResultSet rs = executeGetData(sql)) {
+        try (ResultSet rs = executeGetData("SELECT * FROM users;")) {
             while (rs.next()) {
-                long id = rs.getLong("id");
-                String name = rs.getString("name");
-                String lastname = rs.getString("lastname");
-                byte age = rs.getByte("age");
-
-                User user = new User(name, lastname, age);
-                user.setId(id);
-
+                User user = new User(rs.getString("name"), rs.getString("lastname"), rs.getByte("age"));
+                user.setId(rs.getLong("id"));
                 ls.add(user);
             }
 
@@ -94,7 +83,6 @@ public class UserDaoJDBCImpl implements UserDao {
     }
 
     public void cleanUsersTable() {
-        String sql = "DELETE FROM users;";
-        execute(sql);
+        execute("DELETE FROM users;");
     }
 }

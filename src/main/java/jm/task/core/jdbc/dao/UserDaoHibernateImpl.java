@@ -8,6 +8,7 @@ import java.util.List;
 
 public class UserDaoHibernateImpl implements UserDao {
     private static Session ses;
+
     static {
         try {
             ses = Util.getSession().openSession();
@@ -27,16 +28,14 @@ public class UserDaoHibernateImpl implements UserDao {
 
     @Override
     public void createUsersTable() {
-        try{
+        try {
             ses.beginTransaction();
-            String sql = "CREATE TABLE IF NOT EXISTS users " +
+            ses.createSQLQuery("CREATE TABLE IF NOT EXISTS users " +
                     "(id BIGINT not NULL AUTO_INCREMENT, " +
                     " name VARCHAR(255), " +
                     " lastname VARCHAR(255), " +
                     " age INTEGER, " +
-                    " PRIMARY KEY ( id ))";
-
-            ses.createSQLQuery(sql).executeUpdate();
+                    " PRIMARY KEY ( id ))").executeUpdate();
             ses.getTransaction().commit();
 
         } catch (Exception ex) {
@@ -49,8 +48,7 @@ public class UserDaoHibernateImpl implements UserDao {
     public void dropUsersTable() {
         try {
             ses.beginTransaction();
-            String sql = "DROP TABLE IF EXISTS users";
-            ses.createSQLQuery(sql).executeUpdate();
+            ses.createSQLQuery("DROP TABLE IF EXISTS users").executeUpdate();
             ses.getTransaction().commit();
 
         } catch (Exception ex) {
@@ -75,8 +73,7 @@ public class UserDaoHibernateImpl implements UserDao {
     public void removeUserById(long id) {
         try {
             ses.beginTransaction();
-            User us = (User) ses.get(User.class, id);
-            ses.delete(us);
+            ses.createQuery("delete from users where id = :id").setParameter("id", id).executeUpdate();
             ses.getTransaction().commit();
         } catch (Exception ex) {
             ses.getTransaction().rollback();
